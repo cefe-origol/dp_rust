@@ -47,7 +47,7 @@ fn main(){
 
 #[dp]
 #[dp_extra(values: Vec<i32>, weights: Vec<i32>)]
-fn knapsack(values: Vec<i32>, weight: Vec<i32>){
+fn knapsack(n: usize, k: i32){
   if n == 0 {
     return 0;
   }
