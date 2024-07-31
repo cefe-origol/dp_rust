@@ -68,6 +68,7 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
     let vis = &ast.vis;
     quote! {
         mod #name{
+            use super::*;
             #[derive(Default)]
             pub struct Memo{
                 pub memo: ::std::collections::HashMap<Args, Option<#output>>
@@ -87,11 +88,11 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
                         Some(None) =>
                             panic!("DP Loop on function {} with argument {:?}", stringify!(#name), args),
                         Some(Some(t)) =>
-                            return *t,
+                            return t.clone(),
                     }
                     self.memo.insert(args.clone(), None);
                     let ans = self.solve(extra_args, args.clone());
-                    self.memo.insert(args, Some(ans));
+                    self.memo.insert(args, Some(ans.clone()));
                     ans
                 }
 
@@ -101,15 +102,16 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
                         self.eval(extra_args, x)
                     };
                     #(let #extra_args_names = &extra_args.#extra_args_names;)*
-                    #(let #arg_names = args.#arg_names;)*
+                    #(let #arg_names = args.#arg_names.clone();)*
                     #block
                 }
             }
         }
         fn #name(#(#extra_args,)* #args)->#output{
-            let mut f = #name::Memo::default();
+            let args = #name::Args{#(#arg_names),*};
             let extra_args = #name::ExtraArgs{#(#extra_args_names),*};
-            f.eval(&extra_args, #name::Args{#(#arg_names),*})
+            let mut f = #name::Memo::default();
+            f.eval(&extra_args, args)
         }
     }
     .into()

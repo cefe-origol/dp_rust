@@ -2,9 +2,10 @@ mod dp_trait;
 extern crate dp_lib;
 
 use dp_lib::*;
+use num_bigint::{BigInt, ToBigInt};
 
 fn main() {
-    println!("{}", fib(40));
+    println!("{}", fib(1000_i32.to_bigint().unwrap()));
     println!(
         "{}",
         knapsack(vec![3, 4, 5, 6, 10], vec![2, 3, 4, 5, 9], 5, 10)
@@ -12,11 +13,11 @@ fn main() {
 }
 
 #[dp]
-fn fib(n: i32) -> i32 {
-    if n < 2 {
+fn fib(n: BigInt) -> BigInt {
+    if n.clone() < 2_i32.to_bigint().unwrap() {
         return n;
     }
-    (fib(n - 1) + fib(n - 2)) % 1_000_000_009
+    (fib(n.clone() - 1_i32.to_bigint().unwrap()) + fib(n.clone() - 2_i32.to_bigint().unwrap())) % 1_000_000_009_i32.to_bigint().unwrap()
 }
 
 #[dp]

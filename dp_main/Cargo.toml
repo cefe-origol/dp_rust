@@ -12,5 +12,8 @@ pedantic = "deny"
 nursery = "deny"
 unwrap_used = "deny"
 
+[dependencies]
+num-bigint = "0.4.6"
+
 [dependencies.dp_lib]
 path = "../dp_lib"
