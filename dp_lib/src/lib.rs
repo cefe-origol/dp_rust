@@ -76,7 +76,7 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
             pub struct ExtraArgs{
                 #(pub #extra_args,)*
             }
-            #[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
+            #[derive(Debug, Eq, PartialEq, Hash, Clone)]
             pub struct Args{
                 #(pub #args_as_iter),*
             }
@@ -89,8 +89,8 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
                         Some(Some(t)) =>
                             return *t,
                     }
-                    self.memo.insert(args, None);
-                    let ans = self.solve(extra_args, args);
+                    self.memo.insert(args.clone(), None);
+                    let ans = self.solve(extra_args, args.clone());
                     self.memo.insert(args, Some(ans));
                     ans
                 }

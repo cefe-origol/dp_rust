@@ -30,8 +30,7 @@ Using the dp macro over a non pure function is Undefinied Behaviour.
 Note that pure does not mean `const`, eg. you may use for loops despite
 them being forbidden in `const`.
 
-All arguments must implement `Copy`. In some cases non-`Copy` arguments
-can be used emulated with extra arguments.
+All arguments must implement `Clone`. 
 
 ### Extra arguments
 In case it is needed, extra inmutable arguments can be included with
