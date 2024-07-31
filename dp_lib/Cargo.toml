@@ -1,0 +1,22 @@
+[package]
+name = "dp_lib"
+version = "0.1.0"
+edition = "2021"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+enum_glob_use = "deny"
+pedantic = "deny"
+nursery = "deny"
+unwrap_used = "deny"
+
+[dependencies]
+proc-macro2 = "1.0.86"
+quote = "1.0.36"
+syn = {version="2.0.72",features=["full","fold", "extra-traits"]}
+
+[lib]
+proc-macro = true
+
