@@ -65,6 +65,7 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
             }
         })
         .collect::<Vec<_>>();
+    let vis = &ast.vis;
     quote! {
         mod #name{
             #[derive(Default)]
@@ -94,7 +95,7 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
                     ans
                 }
 
-                fn solve(&mut self, extra_args: &ExtraArgs, args: Args) -> #output{
+                #vis fn solve(&mut self, extra_args: &ExtraArgs, args: Args) -> #output{
                     let mut #name = |#args|{
                         let x = Args{#(#arg_names),*};
                         self.eval(extra_args, x)
@@ -111,5 +112,10 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
             f.eval(&extra_args, #name::Args{#(#arg_names),*})
         }
     }
-    .into( )
+    .into()
+}
+
+#[proc_macro_attribute]
+pub fn dp_extra(attr: TokenStream, data: TokenStream) -> TokenStream {
+    panic!("dp_extra attribute should be used after dp macro")
 }
