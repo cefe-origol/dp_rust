@@ -11,9 +11,10 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
         syn::ReturnType::Default => panic!("DP function should have a return type"),
         syn::ReturnType::Type(_, ty) => ty,
     };
-    let extra_args = {
+    let (extra_args, default_args, removen_args) = {
         let mut extra_args = vec![];
-        //let mut default_args = vec![];
+        let mut default_args = vec![];
+        let mut removen_args = vec![];
         for attr in &ast.attrs {
             match &attr.meta {
                 syn::Meta::List(list) if (attr.path().is_ident("dp_extra")) => {
@@ -23,19 +24,22 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
                         extra_args.push(i);
                     }
                 }
-                /*syn::Meta::List(list) if(attr.path().is_ident("dp_default")) =>{
+                syn::Meta::List(list) if(attr.path().is_ident("dp_default")) =>{
                     for i in list.parse_args_with(
-                        syn::punctuated::Punctuated::<syn::Expr, syn::token::Comma>::parse_terminated
+                        syn::punctuated::Punctuated::<syn::ExprAssign, syn::token::Semi>::parse_terminated
                     ).expect("Wrong use of arguments for dp_default").into_iter(){
-                        default_args.push(i)
+                        default_args.push(i.clone());
+                        if let syn::Expr::Path(path) = *i.left.clone(){
+                            removen_args.push(path.path.get_ident().expect("left side of equality should be in identifier").clone());
+                        }
                     }
-                }*/
+                }
                 _ => todo!("add to extra attrs"),
             }
         }
-        extra_args
+        (extra_args, default_args, removen_args)
     };
-    println!("{}", quote! {#(#extra_args), *});
+    println!("{}", quote! {#(#default_args), *});
     let block = &ast.block;
     let args = &ast.sig.inputs;
     let args_as_iter = args.into_iter();
@@ -66,6 +70,25 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
         })
         .collect::<Vec<_>>();
     let vis = &ast.vis;
+    let user_args: Vec<_> = args
+        .into_iter()
+        .filter_map(|x| match x {
+            syn::FnArg::Typed(syn::PatType { pat, .. }) => {
+                if let syn::Pat::Ident(pat_ident) = *pat.clone() {
+                    if removen_args.contains(&&pat_ident.ident) {
+                        None
+                    } else {
+                        Some(x)
+                    }
+                } else {
+                    panic!("No patterns match {:?}", x);
+                }
+            }
+            syn::FnArg::Receiver(_) => {
+                panic!("All inputs must be of type Typed (self not allowed)")
+            }
+        })
+        .collect();
     quote! {
         mod #name{
             use super::*;
@@ -107,7 +130,8 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
                 }
             }
         }
-        fn #name(#(#extra_args,)* #args)->#output{
+        fn #name(#(#extra_args,)* #(#user_args),*)->#output{
+            #(let #default_args;)*
             let args = #name::Args{#(#arg_names),*};
             let extra_args = #name::ExtraArgs{#(#extra_args_names),*};
             let mut f = #name::Memo::default();
@@ -120,4 +144,9 @@ pub fn dp(attr: TokenStream, data: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn dp_extra(attr: TokenStream, data: TokenStream) -> TokenStream {
     panic!("dp_extra attribute should be used after dp macro")
+}
+
+#[proc_macro_attribute]
+pub fn dp_default(attr: TokenStream, data: TokenStream) -> TokenStream {
+    panic!("dp_default attribute should be used after dp macro")
 }

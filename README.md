@@ -63,8 +63,8 @@ The order is first all the extra arguments, and then all function
 arguments, given in order of appearance.
 
 ### Default arguments
-The `#[dp_default]` attribute is still on the works. It is intended to
-remove auxilliary arguments that should default in the final function.
+The `#[dp_default]` attribute allows you to remove auxilliary arguments
+that should default in the final function.
 
 ```rs
 use std::cmp::min;
@@ -73,23 +73,29 @@ fn main(){
   assert_eq!(edit_distance("movie", "love"), 2);
 }
 
+
 #[dp]
-#[dp_extra(a: str, b: str)]
+#[dp_extra(a: String, b: String)]
 #[dp_default(i=a.len(); j=b.len())]
-fn edit_distance(i: usize, j: usize){
+fn edit_distance(i: usize, j: usize) -> usize{
   if i == 0{
     return j;
   }
   if j == 0{
-    return i
+    return i;
   }
   let mut ans = min(edit_distance(i-1, j), edit_distance(i, j-1))+1;
-  if a.as_bytes()[i] == b.bytes()[j]{
+  if a.as_bytes()[i-1] == b.as_bytes()[j-1]{
     ans = min(ans, edit_distance(i-1, j-1));
+  }
+  else{
+    ans = min(ans, edit_distance(i-1, j-1)+1);
   }
   return ans;
 }
 ```
+Knapsack can also be implemented with the default args `n = values.len()`
+as seen above.
 
 ## Explanation
 Memoization is a technique that allows pure functions overlapping
