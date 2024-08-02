@@ -1,7 +1,9 @@
 [package]
-name = "dp_lib"
-version = "0.3.0"
+name = "dp_macro"
+version = "0.3.1"
 edition = "2021"
+description = "procedural macro that implements memoization for dynamic programming"
+licence = "GPL-3.0"
 
 [lints.rust]
 unsafe_code = "forbid"

@@ -9,20 +9,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 
 [[package]]
-name = "dp"
-version = "0.2.0"
-dependencies = [
- "dp_lib",
- "num-bigint",
-]
-
-[[package]]
-name = "dp_lib"
-version = "0.3.0"
+name = "dp_macro"
+version = "0.3.1"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "dp_main"
+version = "0.3.0"
+dependencies = [
+ "dp_macro",
+ "num-bigint",
 ]
 
 [[package]]

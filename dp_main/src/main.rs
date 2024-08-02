@@ -1,7 +1,6 @@
-mod dp_trait;
-extern crate dp_lib;
+extern crate dp_macro;
 
-use dp_lib::*;
+use dp_macro::*;
 use num_bigint::{BigInt, ToBigInt};
 
 fn main() {
